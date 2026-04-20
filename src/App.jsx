@@ -364,15 +364,18 @@ export default function EbayRepriceTool() {
                 onChange={e => setManualFee(e.target.value)} style={inp()} />
             </div>
           </div>
-          <div style={{ marginTop: 10, background: "#f8fafc", borderRadius: 8, padding: "8px 12px", display: "flex", gap: 16 }}>
-            <div style={{ fontSize: 11, color: "#64748b" }}>適用関税率: <span style={{ fontFamily: "monospace", fontWeight: 700, color: "#7c3aed" }}>{(tariffRate * 100).toFixed(1)}%</span></div>
-            <div style={{ fontSize: 11, color: "#64748b" }}>eBay手数料: <span style={{ fontFamily: "monospace", fontWeight: 700, color: "#2563eb" }}>{(ebayFeeRate * 100).toFixed(2)}%</span></div>
+          <div style={{ marginTop: 10, background: "#fff", borderRadius: 8, padding: "10px 12px", display: "flex", gap: 16 }}>
+            <div style={{ fontSize: 11, color: "#64748b" }}>適用関税率: <span style={{ fontFamily: "monospace", fontWeight: 800, color: "#dc2626", fontSize: 14 }}>{(tariffRate * 100).toFixed(1)}%</span></div>
+            <div style={{ fontSize: 11, color: "#64748b" }}>eBay手数料: <span style={{ fontFamily: "monospace", fontWeight: 800, color: "#16a34a", fontSize: 14 }}>{(ebayFeeRate * 100).toFixed(2)}%</span></div>
           </div>
         </div>
 
         {/* Step1: セルスタの現在数値 */}
-        <div style={card}>
-          <div style={sec}>① セルスタの現在数値</div>
+        <div style={{ ...card, background: "#eff6ff", borderColor: "#1e3a5f", padding: 0, overflow: "hidden" }}>
+          <div style={{ background: "#1e3a5f", padding: "12px 18px" }}>
+            <div style={{ color: "#fff", fontSize: 13, fontWeight: 700, letterSpacing: "0.05em" }}>① セルスタの現在数値</div>
+          </div>
+          <div style={{ padding: 18 }}>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
             {[
               ["販売額 ($)", sellUSD, setSellUSD],
@@ -383,11 +386,11 @@ export default function EbayRepriceTool() {
               ["為替 (¥/$)", fx, setFx],
             ].map(([l, val, set]) => (
               <div key={l}>
-                <label style={lbl}>{l}</label>
+                <label style={{ ...lbl, color: "#1e3a5f" }}>{l}</label>
                 <input type="number" value={val}
                   onChange={e => set(e.target.value)}
                   onFocus={e => { if (e.target.value === "0") set(""); }}
-                  style={inp()} />
+                  style={{ ...inp(), border: "1.5px solid #f59e0b", background: "#fff" }} />
               </div>
             ))}
           </div>
@@ -423,6 +426,7 @@ export default function EbayRepriceTool() {
               )}
             </div>
           )}
+          </div>
         </div>
 
         {/* Step2: 新仕入れ価格 */}
