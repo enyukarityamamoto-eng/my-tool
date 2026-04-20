@@ -278,8 +278,8 @@ export default function EbayRepriceTool() {
   const card = { background: "#fff", border: "1.5px solid #e2e8f0", borderRadius: 14, padding: 18, marginBottom: 14 };
   const sec = { fontSize: 10, fontWeight: 700, color: "#94a3b8", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 12 };
 
-  const ResultBox = ({ label, sell, ship, profit, profitRate, otherJPY, color }) => (
-    <div style={{ background: "#fff", borderRadius: 12, padding: "14px 16px", border: `1.5px solid ${color}44`, marginBottom: 10 }}>
+  const ResultBox = ({ label, sell, ship, profit, profitRate, otherJPY, color, borderColor }) => (
+    <div style={{ background: "#fff", borderRadius: 12, padding: "14px 16px", border: `2px solid ${borderColor || color + "44"}`, marginBottom: 10 }}>
       <div style={{ fontSize: 11, color: "#64748b", fontWeight: 600, marginBottom: 10 }}>{label}</div>
       <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", marginBottom: 10 }}>
         <div>
@@ -462,6 +462,7 @@ export default function EbayRepriceTool() {
               profitRate={newProfit.profitRate}
               otherJPY={newFwd.otherJPY}
               color="#1d4ed8"
+              borderColor="#f59e0b"
             />
 
             <ResultBox
@@ -472,6 +473,7 @@ export default function EbayRepriceTool() {
               profitRate={newVeroProfit.profitRate}
               otherJPY={newFwd.veroOtherJPY}
               color="#7c3aed"
+              borderColor="#ef4444"
             />
 
             {/* 目標利益率ライン */}
