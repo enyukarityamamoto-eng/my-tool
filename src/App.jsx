@@ -147,17 +147,25 @@ function calcVeroProfit({ hopeUSD, veroSellUSD, actualShippingJPY, purchaseJPY, 
   return { profit, profitRate };
 }
 
-// 目標利益率から希望額を反復法で逆算
-function findHopeForTarget({ targetRate, actualShippingUSD, actualShippingJPY, purchaseJPY, ebayFeeRate, tariffRate, fx, maxIter = 50 }) {
-  let hope = 50;
-  for (let i = 0; i < maxIter; i++) {
+// 目標利益率から希望額を二分探索で逆算
+function findHopeForTarget({ targetRate, actualShippingUSD, actualShippingJPY, purchaseJPY, ebayFeeRate, tariffRate, fx, maxIter = 80 }) {
+  let lo = 1;
+  let hi = 2000;
+
+  const evalRate = (hope) => {
     const fwd = calcForward({ hopeUSD: hope, actualShippingUSD, tariffRate, ebayFeeRate, fx });
     const p = calcProfit({ hopeUSD: hope, sellUSD: fwd.finalSell, shippingUSD: fwd.selectedShipping, actualShippingJPY, purchaseJPY, otherJPY: fwd.otherJPY, ebayFeeRate, fwd, fx });
-    const err = p.profitRate - targetRate;
-    if (Math.abs(err) < 0.01) break;
-    hope += err * 0.3;
+    return p.profitRate;
+  };
+
+  for (let i = 0; i < maxIter; i++) {
+    const mid = (lo + hi) / 2;
+    const rate = evalRate(mid);
+    if (Math.abs(rate - targetRate) < 0.01) return mid;
+    if (rate < targetRate) lo = mid;
+    else hi = mid;
   }
-  return hope;
+  return (lo + hi) / 2;
 }
 
 function profitColor(rate) {
