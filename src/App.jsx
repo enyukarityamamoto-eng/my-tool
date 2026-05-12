@@ -259,14 +259,16 @@ export default function EbayRepriceTool() {
     if (!derived || !newPurch) return null;
     const hope = findHopeForTarget({ targetRate: 3, actualShippingUSD: actShipUSD, actualShippingJPY: actShipJPY, purchaseJPY: newPurch, ebayFeeRate, tariffRate, fx: fxRate });
     const fwd = calcForward({ hopeUSD: hope, actualShippingUSD: actShipUSD, tariffRate, ebayFeeRate, fx: fxRate });
-    return { hope, fwd };
+    const veroProfit = calcVeroProfit({ hopeUSD: hope, veroSellUSD: fwd.veroSell, actualShippingJPY: actShipJPY, purchaseJPY: newPurch, veroOtherJPY: fwd.veroOtherJPY, ebayFeeRate, fx: fxRate });
+    return { hope, fwd, veroProfit };
   }, [derived, newPurch, actShipUSD, actShipJPY, ebayFeeRate, tariffRate, fxRate]);
 
   const target5 = useMemo(() => {
     if (!derived || !newPurch) return null;
     const hope = findHopeForTarget({ targetRate: 5, actualShippingUSD: actShipUSD, actualShippingJPY: actShipJPY, purchaseJPY: newPurch, ebayFeeRate, tariffRate, fx: fxRate });
     const fwd = calcForward({ hopeUSD: hope, actualShippingUSD: actShipUSD, tariffRate, ebayFeeRate, fx: fxRate });
-    return { hope, fwd };
+    const veroProfit = calcVeroProfit({ hopeUSD: hope, veroSellUSD: fwd.veroSell, actualShippingJPY: actShipJPY, purchaseJPY: newPurch, veroOtherJPY: fwd.veroOtherJPY, ebayFeeRate, fx: fxRate });
+    return { hope, fwd, veroProfit };
   }, [derived, newPurch, actShipUSD, actShipJPY, ebayFeeRate, tariffRate, fxRate]);
 
   const inp = (w) => ({
@@ -479,10 +481,13 @@ export default function EbayRepriceTool() {
             {/* 目標利益率ライン */}
             <div style={{ marginTop: 14, background: "#f8fafc", borderRadius: 10, padding: "12px 14px" }}>
               <div style={{ fontSize: 10, color: "#94a3b8", fontWeight: 700, marginBottom: 10, letterSpacing: "0.08em", textTransform: "uppercase" }}>目標利益率ライン</div>
-              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+
+              {/* 通常 */}
+              <div style={{ fontSize: 11, color: "#f59e0b", fontWeight: 700, marginBottom: 6 }}>通常出品</div>
+              <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 14 }}>
                 <thead>
                   <tr style={{ borderBottom: "1px solid #e2e8f0" }}>
-                    {["目標", "希望額", "販売額", "送料"].map((h, i) => (
+                    {["目標", "希望額", "販売額", "送料", "その他経費"].map((h, i) => (
                       <th key={h} style={{ padding: "4px 8px", fontSize: 10, color: "#94a3b8", fontWeight: 600, textAlign: i === 0 ? "left" : "right" }}>{h}</th>
                     ))}
                   </tr>
@@ -494,6 +499,29 @@ export default function EbayRepriceTool() {
                       <td style={{ padding: "8px 8px", textAlign: "right", fontFamily: "monospace", fontSize: 12, color: "#475569" }}>{fmtD(t.hope)}</td>
                       <td style={{ padding: "8px 8px", textAlign: "right", fontFamily: "monospace", fontSize: 13, fontWeight: 700, color: "#334155" }}>{fmtD(t.fwd.finalSell)}</td>
                       <td style={{ padding: "8px 8px", textAlign: "right", fontFamily: "monospace", fontSize: 13, fontWeight: 700, color: "#334155" }}>{fmtD(t.fwd.selectedShipping)}</td>
+                      <td style={{ padding: "8px 8px", textAlign: "right", fontFamily: "monospace", fontSize: 12, color: "#64748b" }}>{fmtY(t.fwd.otherJPY)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              {/* vero */}
+              <div style={{ fontSize: 11, color: "#ef4444", fontWeight: 700, marginBottom: 6 }}>vero出品</div>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead>
+                  <tr style={{ borderBottom: "1px solid #e2e8f0" }}>
+                    {["目標", "販売額", "送料", "その他経費"].map((h, i) => (
+                      <th key={h} style={{ padding: "4px 8px", fontSize: 10, color: "#94a3b8", fontWeight: 600, textAlign: i === 0 ? "left" : "right" }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {[["3%", target3], ["5%", target5]].map(([label, t]) => t && (
+                    <tr key={label} style={{ borderBottom: "1px solid #f1f5f9" }}>
+                      <td style={{ padding: "8px 8px", fontFamily: "monospace", fontSize: 13, fontWeight: 700, color: "#d97706" }}>{label}</td>
+                      <td style={{ padding: "8px 8px", textAlign: "right", fontFamily: "monospace", fontSize: 13, fontWeight: 700, color: "#334155" }}>{fmtD(t.fwd.veroSell)}</td>
+                      <td style={{ padding: "8px 8px", textAlign: "right", fontFamily: "monospace", fontSize: 13, fontWeight: 700, color: "#334155" }}>{fmtD(VERO_SHIPPING)}</td>
+                      <td style={{ padding: "8px 8px", textAlign: "right", fontFamily: "monospace", fontSize: 12, color: "#64748b" }}>{fmtY(t.fwd.veroOtherJPY)}</td>
                     </tr>
                   ))}
                 </tbody>
